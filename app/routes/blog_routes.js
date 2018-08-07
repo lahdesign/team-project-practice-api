@@ -25,7 +25,6 @@ router.get("/blogs/:id", requireToken, (req, res) => {
     .then(blog => res.status(200).send(blog))
     .catch(err => handle(err, res));
 });
-// db.books.updateMany({}, { $set: { owner: req.user._id } });
 
 router.patch("/blogs/:id", requireToken, (req, res) => {
   const updateBlog = {
@@ -36,13 +35,22 @@ router.patch("/blogs/:id", requireToken, (req, res) => {
   fileUpload(updateBlog.headerImage)
     .then(data => {
       updateBlog.headerImage = data.Location;
+      console.log(updateBlog.headerImage);
+    })
+    .then(
+      fileUpload(updateBlog.logo).then(data => {
+        updateBlog.logo = data.Location;
+        console.log(updateBlog.logo);
+      })
+    )
+    .then(() => {
       Blog.findByIdAndUpdate(
         req.params.id,
         updateBlog,
         { new: true },
         (err, todo) => {
           if (err) return res.status(500).send(err);
-          return res.send(todo);
+          return res.json(todo);
         }
       );
     })
