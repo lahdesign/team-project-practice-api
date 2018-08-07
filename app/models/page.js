@@ -16,6 +16,9 @@ const pageSchema = new mongoose.Schema({
      ref: "Blog",
      required: true
    }
+   {
+     timestamps: true
+   })
 })
 
-module.exports = mongoose.model('Page', userSchema)
+module.exports = mongoose.model('Page', pageSchema)
