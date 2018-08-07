@@ -27,22 +27,17 @@ router.get("/blogs/:id", requireToken, (req, res) => {
 // db.books.updateMany({}, { $set: { owner: req.user._id } });
 
 router.patch("/blogs/:id", requireToken, (req, res) => {
-  const updateBlog = {
-    blog: {
-      title: req.body.blog.title,
-      logo: req.body.blog.logo,
-      headerImage: req.body.blog.headerImage
-    }
-  };
-
-  fileUpload(updateBlog.blog.headerImage)
+  console.log(req.params.id);
+  fileUpload(req.body.blog.headerImage)
     .then(data => {
-      updateBlog.blog.headerImage = data.Location;
+      req.body.blog.headerImage = data.Location;
       Blog.findByIdAndUpdate(req.params.id)
         .then(handle404)
         .then(blog => {
-          requireOwnership(updateBlog, blog);
-          blog.update(updateBlog.blog);
+          requireOwnership(req, blog);
+          blog.update(req.body.blog);
+          const editedBlog = Blog.find();
+          res.status(200).json(editedBlog);
         })
         .catch(err => handle(err, res));
     })
@@ -54,13 +49,12 @@ router.post("/blogs", requireToken, (req, res) => {
   fileUpload(req.body.blog.headerImage)
     .then(data => {
       req.body.blog.headerImage = data.Location;
-      console.log(req.body.blog);
       Blog.create(req.body.blog)
         .then(blog => {
           res.status(201).json(blog);
         })
         .catch(err => handle(err, res));
-      console.log(data.Location);
+      console.log(data);
     })
     .catch(console.error);
 });
