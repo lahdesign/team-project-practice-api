@@ -21,27 +21,32 @@ router.get("/blogs", requireToken, (req, res) => {
 
 router.get("/blogs/:id", requireToken, (req, res) => {
   Blog.findById(req.params.id)
+    .then(handle404)
     .then(blog => res.status(200).send(blog))
     .catch(err => handle(err, res));
 });
 // db.books.updateMany({}, { $set: { owner: req.user._id } });
 
 router.patch("/blogs/:id", requireToken, (req, res) => {
-  console.log(req.params.id);
-  fileUpload(req.body.blog.headerImage)
+  const updateBlog = {
+    title: req.body.blog.title,
+    logo: req.body.blog.logo,
+    headerImage: req.body.blog.headerImage
+  };
+  fileUpload(updateBlog.headerImage)
     .then(data => {
-      req.body.blog.headerImage = data.Location;
-      Blog.findByIdAndUpdate(req.params.id)
-        .then(handle404)
-        .then(blog => {
-          requireOwnership(req, blog);
-          blog.update(req.body.blog);
-          const editedBlog = Blog.find();
-          res.status(200).json(editedBlog);
-        })
-        .catch(err => handle(err, res));
+      updateBlog.headerImage = data.Location;
+      Blog.findByIdAndUpdate(
+        req.params.id,
+        updateBlog,
+        { new: true },
+        (err, todo) => {
+          if (err) return res.status(500).send(err);
+          return res.send(todo);
+        }
+      );
     })
-    .catch(console.error);
+    .catch(err => handle(err, res));
 });
 
 router.post("/blogs", requireToken, (req, res) => {
@@ -49,6 +54,15 @@ router.post("/blogs", requireToken, (req, res) => {
   fileUpload(req.body.blog.headerImage)
     .then(data => {
       req.body.blog.headerImage = data.Location;
+    })
+    .then(
+      fileUpload(req.body.blog.logo).then(data => {
+        req.body.blog.logo = data.Location;
+        console.log(req.body.blog.logo);
+      })
+    )
+    .then(data => {
+      // req.body.blog.headerImage = data.Location;
       Blog.create(req.body.blog)
         .then(blog => {
           res.status(201).json(blog);
@@ -60,16 +74,10 @@ router.post("/blogs", requireToken, (req, res) => {
 });
 
 router.delete("/blogs/:id", requireToken, (req, res) => {
-  Blog.findByIdAndRemove(req.params.id)
-    .then(handle404)
-    .then(blog => {
-      requireOwnership(req, blog);
-      blog.remove();
-      const blogs = Blog.find();
-      res.status(200).json(blogs);
-    })
-    .then(() => res.status(204))
-    .catch(err => handle(err, res));
+  Blog.findByIdAndRemove(req.params.id, (err, todo) => {
+    if (err) return res.status(500).send(err);
+    return res.status(200).send("Blog successfully deleted!!");
+  });
 });
 
 module.exports = router;
