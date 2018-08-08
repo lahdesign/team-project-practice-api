@@ -1,21 +1,20 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const pageSchema = new mongoose.Schema({
-
   photo: {
-    type: String,
+    type: String
   },
   description: {
-    type: String,
+    type: String
   },
   title: {
-    type: String,
+    type: String
   },
-  blogId: {
-     type: mongoose.Schema.Types.ObjectId,
-     ref: "Blog",
-     required: true
-   }
-})
+  blogID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Blog",
+    required: true
+  }
+});
 
-module.exports = mongoose.model('Page', userSchema)
+module.exports = mongoose.model("Page", pageSchema);
