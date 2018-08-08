@@ -1,10 +1,8 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const pageSchema = new mongoose.Schema({
-
   photo: {
-    type: String,
-    require: true
+    type: String
   },
   description: {
     type: String
@@ -12,15 +10,11 @@ const pageSchema = new mongoose.Schema({
   title: {
     type: String
   },
-  blogId: {
+  blogID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Blog',
+    ref: "Blog",
     required: true
   }
-},
-{
-  timestamps: true
-}
-)
+});
 
-module.exports = mongoose.model('Page', pageSchema)
+module.exports = mongoose.model("Page", pageSchema);
