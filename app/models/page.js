@@ -4,21 +4,23 @@ const pageSchema = new mongoose.Schema({
 
   photo: {
     type: String,
+    require: true
   },
   description: {
-    type: String,
+    type: String
   },
   title: {
-    type: String,
+    type: String
   },
   blogId: {
-     type: mongoose.Schema.Types.ObjectId,
-     ref: "Blog",
-     required: true
-   }
-   {
-     timestamps: true
-   })
-})
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Blog',
+    required: true
+  }
+},
+{
+  timestamps: true
+}
+)
 
 module.exports = mongoose.model('Page', pageSchema)
